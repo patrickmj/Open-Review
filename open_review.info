@@ -1,0 +1,5 @@
+; $Id: open_review.info,v 0.1 2009/05/25 patrickgmj Exp $
+name = Open Review
+description = Do CommentPress-style commenting in Drupal
+core = 6.x
+version = "6.x-0.1"

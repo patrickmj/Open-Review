@@ -1,0 +1,124 @@
+<?php
+/**
+ * Implementation of hook_comment()
+ * 
+ **/
+
+
+
+function open_review_comment($a1, $op) {
+	switch ($op) {
+		case 'view':
+		
+			//check whether the comment is associated with a paragraph
+			$para_id = db_result(db_query('SELECT p_id FROM {open_review} o WHERE o.cid = %d ', $a1->cid));
+			
+			//$a1->comment = "woot";
+			firep($a1, 'a1');	
+			if($para_id) {
+				$a1->comment = "<span class='open-review-comment' id='open-review-on-para-$para_id'>" . $a1->comment . "</span>";
+				$a1->open_review_para_id = $para_id;	
+			}
+		break;
+		
+		case 'insert':		
+			db_query('INSERT INTO {open_review} (cid, p_id) VALUES (%d, "%s")', $a1['cid'], $a1['open_review_para_id']);					
+		break;
+		
+		case 'delete':
+			db_query('DELETE FROM {open_review}  WHERE cid = %d', $a1->cid);
+		break;
+		
+	}
+	
+}
+
+function open_review_form_alter(&$form, $form_state, $form_id) {
+	if($form_id == 'comment_form') {
+
+		$form['comment_filter']['open_review_para_id'] = array(
+			'#type'=> 'hidden'			
+		);
+		$form['#prefix'] = "<div id='open-review-comment-form'>";
+		$form['#suffix'] = "</div>";		
+	} elseif($form_id = 'node_type_form' && isset($form['identity']['type'])) {
+		firep($form, 'wtf');
+		$form['comment']['open_review'] = array(
+			'#type' => 'radios',
+			'#title' => t('Open Review Comments'),
+			'#default_value' => variable_get('open_review_' . $form['#node_type']->type, 0),
+			'#options' => array(0 => t('Disabled'), 1 => t('Enabled')),
+			'#description' => t('Use Open Review for this content type?') 
+		
+		);
+		
+	}	
+}
+
+/**
+ * Implementation of hook_nodeapi()
+ */
+ 
+function open_review_nodeapi(&$node, $op, $a3 = NULL, $a4  = NULL) {
+	
+	if($op=='view') {
+		if(variable_get('open_review_' . $node->type, 0)) {
+			//I'm bringing in my own copy of jQuery and jQuery UI because the jQuery Upgrade and jQuery UI
+			//modules have weak documentation and are too difficult to install
+			//jquery UI also breaks when switching themes, and theme-agnosticsim is a design goal
+			//of open_review: it's something that sets it apart from CommentPress
+			drupal_add_css(drupal_get_path('module', 'open_review') . '/jquery/themes/base/ui.dialog.css');
+			drupal_add_css(drupal_get_path('module', 'open_review') . '/jquery/themes/base/ui.resizable.css');			
+			drupal_add_js(drupal_get_path('module', 'open_review') . '/jquery/jquery-1.3.2.min.js');
+			drupal_add_js(drupal_get_path('module', 'open_review') . '/jquery/jquery-ui-1.7.3.custom.min.js');
+			drupal_add_js(drupal_get_path('module', 'open_review') . '/open_review.js');
+			drupal_add_css(drupal_get_path('module', 'open_review') . '/open_review.css');
+
+			$text=$node->content['body']['#value'];
+			//I need to add an id to the <p> elements, so domify it to manipulate the <p>s
+			$dom = new DOMDocument();
+			$dom->loadHTML($text);
+			$xpath = new DOMXPath($dom);
+						
+			
+			$ps = $dom->getElementsByTagName('p');
+			
+
+			foreach($ps as $p) {
+				
+				$id = "p-" .  sha1($p->textContent);				
+				$p->setAttribute('id', $id);		
+				$p->setAttribute('class', 'open-review-para');				
+				$actionsEl = $dom->createElement('span');
+				$actionsEl->setAttribute('class', 'open-review-para-actions');				
+				$commentEl = $dom->createElement('span', 'Comm');
+				
+				$commentEl->setAttribute('class', 'open-review-para-comment');
+				$viewEl = $dom->createElement('span', 'View');
+				$viewEl->setAttribute('class', 'open-review-para-view');
+				$actionsEl->appendChild($commentEl);
+				$actionsEl->appendChild($viewEl);
+				$p->insertBefore($actionsEl, $p->firstChild);
+				
+								
+			}
+			
+			$node->content['body']['#value'] = $dom->saveHTML();		
+		}
+	}
+}
+
+/**
+ * Implementation of hook_footer()
+ */
+ 
+function open_review_footer() {
+	
+	//should check to see if open_review applies to node type
+	$output = "<div id='open-review-footer'>";
+	$output .= "<div id='open-review-comments-dialog'></div>";
+	$output .= "<div id='open-review-comment-form-dialog'></div>";
+	
+	$output .= "</div>";
+	return $output;
+}

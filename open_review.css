@@ -1,0 +1,84 @@
+.open-review-active {
+	background-color: yellow;
+	border: 2px solid yellow;
+	
+}
+
+
+p.open-review-para {
+	
+	min-height: 50px;
+}
+
+
+span.open-review-para-actions {
+	display:block;
+    float:left;
+	padding-right: 5px;;
+
+	
+}
+
+
+span.open-review-para-comment {
+	
+	display: block;
+	cursor: pointer;
+	
+
+	
+}
+
+span.open-review-para-view {
+    
+    display: block;
+    cursor: pointer;
+    
+
+    
+    
+}
+
+div#open-review-comments {
+	width: 30%;
+	
+	
+}
+
+/* jQuery styling */
+
+.ui-dialog .ui-dialog-titlebar-close {
+	height: auto;
+	margin: 0;
+	width: auto;
+	
+}
+
+div.ui-dialog {
+	background-color: white;
+	border: 1px solid black;
+	padding: 10px;
+}
+
+div.ui-dialog-titlebar {
+	margin-bottom: 20px;
+}
+
+span.ui-dialog-title {
+	
+}
+
+span#ui-dialog-title-dialog {
+	
+}
+
+
+
+di#dialog {
+	
+}
+div.ui-dialog-content {
+	
+}
+
+
