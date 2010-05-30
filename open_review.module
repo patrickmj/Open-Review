@@ -1,10 +1,17 @@
 <?php
+// $Id$
+
+/**
+ * @file
+ * A module to create comment functionality similar to CommentPress for WordPress.
+ * Allows comments to be made on a paragraph-by-paragraph basis.
+ */
+
+
 /**
  * Implementation of hook_comment()
  * 
  **/
-
-
 
 function open_review_comment($a1, $op) {
 	switch ($op) {
@@ -15,7 +22,7 @@ function open_review_comment($a1, $op) {
 			
 			//$a1->comment = "woot";
 			
-			if($para_id) {
+			if ($para_id) {
 				$a1->comment = "<span class='open-review-comment' id='open-review-on-para-$para_id'>" . $a1->comment . "</span>";
 				$a1->open_review_para_id = $para_id;	
 			}
@@ -33,15 +40,20 @@ function open_review_comment($a1, $op) {
 	
 }
 
+/**
+ * Implementation of hook_form_alter().
+ */
+ 
 function open_review_form_alter(&$form, $form_state, $form_id) {
-	if($form_id == 'comment_form') {
+	if ($form_id == 'comment_form') {
 
 		$form['comment_filter']['open_review_para_id'] = array(
-			'#type'=> 'hidden'			
+			'#type' => 'hidden'			
 		);
 		$form['#prefix'] = "<div id='open-review-comment-form'>";
 		$form['#suffix'] = "</div>";		
-	} elseif($form_id = 'node_type_form' && isset($form['identity']['type'])) {
+	} 
+	elseif ($form_id = 'node_type_form' && isset($form['identity']['type'])) {
 		
 		$form['comment']['open_review'] = array(
 			'#type' => 'radios',
@@ -61,8 +73,8 @@ function open_review_form_alter(&$form, $form_state, $form_id) {
  
 function open_review_nodeapi(&$node, $op, $a3 = NULL, $a4  = NULL) {
 	
-	if($op=='view') {
-		if(variable_get('open_review_' . $node->type, 0)) {
+	if ($op=='view') {
+		if (variable_get('open_review_' . $node->type, 0)) {
 			//I'm bringing in my own copy of jQuery and jQuery UI because the jQuery Upgrade and jQuery UI
 			//modules have weak documentation and are too difficult to install
 			//jquery UI also breaks when switching themes, and theme-agnosticsim is a design goal
@@ -84,18 +96,21 @@ function open_review_nodeapi(&$node, $op, $a3 = NULL, $a4  = NULL) {
 			$ps = $dom->getElementsByTagName('p');
 			
 
-			foreach($ps as $p) {
+			foreach ($ps as $p) {
 				
 				$id = "p-" .  sha1($p->textContent);				
 				$p->setAttribute('id', $id);		
 				$p->setAttribute('class', 'open-review-para');				
 				$actionsEl = $dom->createElement('span');
-				$actionsEl->setAttribute('class', 'open-review-para-actions');				
-				$commentEl = $dom->createElement('span', 'Comm');
-				
+				$actionsEl->setAttribute('class', 'open-review-para-actions');
+								
+				$commentEl = $dom->createElement('span');				
 				$commentEl->setAttribute('class', 'open-review-para-comment');
-				$viewEl = $dom->createElement('span', 'View');
+				$commentEl->setAttribute('title', 'Add A Comment');
+				$viewEl = $dom->createElement('span');
 				$viewEl->setAttribute('class', 'open-review-para-view');
+				$viewEl->setAttribute('title', 'View Comments');
+				
 				$actionsEl->appendChild($commentEl);
 				$actionsEl->appendChild($viewEl);
 				$p->insertBefore($actionsEl, $p->firstChild);

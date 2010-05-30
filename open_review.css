@@ -1,3 +1,4 @@
+/* $Id$ */
 .open-review-active {
 	background-color: yellow;
 	border: 2px solid yellow;
@@ -24,8 +25,10 @@ span.open-review-para-comment {
 	
 	display: block;
 	cursor: pointer;
-	
-
+	width: 20px;
+	height: 20px;
+    background-image: url('icons/comment_add.png');
+	background-repeat: no-repeat;
 	
 }
 
@@ -33,9 +36,10 @@ span.open-review-para-view {
     
     display: block;
     cursor: pointer;
-    
-
-    
+    width: 20px;
+    height: 20px;    
+    background-image: url('icons/comments.png');
+    background-repeat: no-repeat;
     
 }
 

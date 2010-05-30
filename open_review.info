@@ -1,4 +1,4 @@
-; $Id: open_review.info,v 0.1 2009/05/25 patrickgmj Exp $
+; $Id$
 name = Open Review
 description = Do CommentPress-style commenting in Drupal
 core = 6.x
