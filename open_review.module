@@ -14,7 +14,7 @@ function open_review_comment($a1, $op) {
 			$para_id = db_result(db_query('SELECT p_id FROM {open_review} o WHERE o.cid = %d ', $a1->cid));
 			
 			//$a1->comment = "woot";
-			firep($a1, 'a1');	
+			
 			if($para_id) {
 				$a1->comment = "<span class='open-review-comment' id='open-review-on-para-$para_id'>" . $a1->comment . "</span>";
 				$a1->open_review_para_id = $para_id;	
@@ -42,7 +42,7 @@ function open_review_form_alter(&$form, $form_state, $form_id) {
 		$form['#prefix'] = "<div id='open-review-comment-form'>";
 		$form['#suffix'] = "</div>";		
 	} elseif($form_id = 'node_type_form' && isset($form['identity']['type'])) {
-		firep($form, 'wtf');
+		
 		$form['comment']['open_review'] = array(
 			'#type' => 'radios',
 			'#title' => t('Open Review Comments'),
