@@ -5,7 +5,7 @@
  * Implementation of hook_install().
  */
 function open_review_install() {
-	firep('install', 'i');
+	
   drupal_install_schema('open_review');
 }
 
@@ -13,7 +13,7 @@ function open_review_install() {
  * Implementation of hook_uninstall().
  */
 function open_review_uninstall() {
-	firep('uninstall', 'u');
+	
   drupal_uninstall_schema('open_review');
 }
 
