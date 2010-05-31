@@ -67,7 +67,7 @@ var OpenReview = {
 		if (d) {
 			d.empty();
 	        //clientWidth probably fails in, guess what?, IE!
-	        var pos = [targetP.offsetLeft + targetP.clientWidth + 150 + OpenReview.commentViewDialogs.length * 30, targetP.offsetTop - 30];
+	        var pos = [targetP.offsetLeft + targetP.clientWidth / 3 + 150 + OpenReview.commentViewDialogs.length * 30, targetP.offsetTop - 30];
 	        var snippet = OpenReview.getParaSnippet(paraId);		
 	        var comments = $(OpenReview.gatherCommentsForPara(paraId));
 	        comments.each(function(index, el) {
@@ -131,7 +131,7 @@ var OpenReview = {
 	getParaSnippet: function(paraId) {	
 	    var text = $('#' + paraId).text();
 		var textArray = text.split(' ');
-		textArray = textArray.slice(0, 4);
+		textArray = textArray.slice(1, 4);
 		
 		return '"' + textArray.join(' ') + '. . ."';
 	},
@@ -161,7 +161,7 @@ var OpenReview = {
 	 */
 	commentViewDialogClose: function(event, ui) {
 		var paraId = $(event.target).data('paraId');
-        
+        $('#' + paraId).removeClass('open-review-active');
         for(var i = 0; i<OpenReview.commentViewDialogs.length; i++) {
             if($(OpenReview.commentViewDialogs[i]).data('paraId') == paraId) {
                 OpenReview.commentViewDialogs.splice(i, 1);

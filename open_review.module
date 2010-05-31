@@ -29,7 +29,10 @@ function open_review_comment($a1, $op) {
 		break;
 		
 		case 'insert':		
-			db_query('INSERT INTO {open_review} (cid, p_id) VALUES (%d, "%s")', $a1['cid'], $a1['open_review_para_id']);					
+      $cid = $a1['cid'];
+      $p_id = $a1['open_review_para_id'];
+      $data = array('cid' => $cid, 'p_id' => $p_id ); 
+      drupal_write_record('open_review', $data );  					
 		break;
 		
 		case 'delete':
@@ -107,7 +110,9 @@ function open_review_nodeapi(&$node, $op, $a3 = NULL, $a4  = NULL) {
 				$commentEl = $dom->createElement('span');				
 				$commentEl->setAttribute('class', 'open-review-para-comment');
 				$commentEl->setAttribute('title', 'Add A Comment');
-				$viewEl = $dom->createElement('span');
+                
+        $result = db_result(db_query('SELECT COUNT(*) FROM {open_review} WHERE p_id = "%s" ', $id ));        
+				$viewEl = $dom->createElement('span', $result);
 				$viewEl->setAttribute('class', 'open-review-para-view');
 				$viewEl->setAttribute('title', 'View Comments');
 				
