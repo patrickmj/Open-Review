@@ -106,7 +106,7 @@ var OpenReview = {
 			if(OpenReview.commentViewDialogs[i].data('paraId') == paraId) {
 		        $('.ui-dialog-title').removeClass('open-review-active');
 				$('.ui-dialog-title', OpenReview.commentViewDialogs[i].parent()).addClass('open-review-active');
-				OpenReview.commentViewDialogs[i].parent().focus();
+				OpenReview.commentViewDialogs[i].dialog('moveToTop');
 				return false;
 			}
 		}
@@ -129,7 +129,11 @@ var OpenReview = {
 	 * @return string The first few characters of the paragraph
 	 */
 	getParaSnippet: function(paraId) {	
-		return '"' + $('#' + paraId).text().substr(0, 10) + '. . ."';
+	    var text = $('#' + paraId).text();
+		var textArray = text.split(' ');
+		textArray = textArray.slice(0, 4);
+		
+		return '"' + textArray.join(' ') + '. . ."';
 	},
 	
 	/**
@@ -167,8 +171,7 @@ var OpenReview = {
 	},
 	
 	commentDialogClose: function(event, ui) {
-        //alert('wtf');
-        //$('#marker').replaceWith(OpenReview.commentForm);		
+	
 	}
 
     
