@@ -1,10 +1,33 @@
 /* $Id$ */
 
+
+.comment_reply {
+	display: none ! important;
+	
+}
+
 .open-review-active {
 	background-color: yellow;
 	
 }
 
+.open-review-view-dialog-comment {
+    cursor: pointer;
+    padding-left: 20px;
+    background-image: url('icons/comment_add.png');
+    background-repeat: no-repeat;
+}
+
+.open-review-comment-open-on-para {
+	cursor: pointer;
+	padding-left: 20px;
+    background-image: url('icons/comments.png');
+    background-repeat: no-repeat;	
+}
+
+div.ui-dialog .open-review-comment-open-on-para {
+	display: none;
+}
 
 p.open-review-para {
 	

@@ -23,8 +23,12 @@ function open_review_comment($a1, $op) {
 			//$a1->comment = "woot";
 			
 			if ($para_id) {
-				$a1->comment = "<span class='open-review-comment' id='open-review-on-para-$para_id'>" . $a1->comment . "</span>";
-				$a1->open_review_para_id = $para_id;	
+				$wrappedComment = "<span class='open-review-comment' id='open-review-on-para-$para_id'>";
+        $wrappedComment .= "<span class='open-review-comment-open-on-para'>Open paragraph comments</span>";
+        $wrappedComment .= $a1->comment;
+        $wrappedComment .= "</span>";
+        $a1->comment = $wrappedComment;
+//				$a1->open_review_para_id = $para_id;	
 			}
 		break;
 		
