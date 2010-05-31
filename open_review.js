@@ -42,7 +42,7 @@ var OpenReview = {
         d.empty();        	
 		d.append(commentFormClone);
 		d.dialog('option', 'title', "Comment on " + OpenReview.getParaSnippet(paraId));
-		
+		d.dialog('option', 'width', '550');
         
         if(typeof tinyMCE != 'undefined') {
 			//this is pretty hacky. I think what's happening is that tinyMCE remembers
@@ -240,6 +240,7 @@ OpenReview.commentSettings =
         autoOpen: false,
         draggable: true,
         resizable: true,
+		width: 550
 		//close: OpenReview.commentDialogClose 
     };
 

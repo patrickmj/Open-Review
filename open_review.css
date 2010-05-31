@@ -6,6 +6,7 @@
 	
 }
 
+
 .open-review-active {
 	background-color: yellow;
 	
@@ -86,6 +87,7 @@ div.ui-dialog {
 	background-color: white;
 	border: 1px solid black;
 	padding: 10px;
+	width: 550px;
 }
 
 div.ui-dialog-titlebar {
