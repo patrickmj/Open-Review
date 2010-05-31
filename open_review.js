@@ -130,8 +130,8 @@ var OpenReview = {
 	 */
 	getParaSnippet: function(paraId) {	
 	    var text = $('#' + paraId).text();
-		var textArray = text.split(' ');
-		textArray = textArray.slice(1, 4);
+		var textArray = text.substr(1).split(' ');
+		textArray = textArray.slice(0, 4);
 		
 		return '"' + textArray.join(' ') + '. . ."';
 	},
