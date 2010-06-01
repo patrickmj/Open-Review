@@ -1,11 +1,11 @@
 /* $Id$ */
 
 
-.comment_reply {
-	display: none ! important;
+.indent {
+	margin-left: 20px;
+	background-color: red;
 	
 }
-
 
 .open-review-active {
 	background-color: yellow;
@@ -94,8 +94,8 @@ div.ui-dialog-titlebar {
 	margin-bottom: 20px;
 }
 
-span.ui-dialog-title {
-	
+.ui-dialog .ui-dialog-title {
+	float: none;
 }
 
 span#ui-dialog-title-dialog {

@@ -18,29 +18,33 @@ function open_review_comment($a1, $op) {
 		case 'view':
 		
 			//check whether the comment is associated with a paragraph
-			$para_id = db_result(db_query('SELECT p_id FROM {open_review} o WHERE o.cid = %d ', $a1->cid));
-			
-			//$a1->comment = "woot";
-			
+			$para_id = db_result(db_query('SELECT p_id FROM {open_review} o WHERE o.cid = %d OR o.cid =  %d', $a1->cid, $a1->pid));
+						
 			if ($para_id) {
 				$wrappedComment = "<span class='open-review-comment' id='open-review-on-para-$para_id'>";
         $wrappedComment .= "<span class='open-review-comment-open-on-para'>Open paragraph comments</span>";
         $wrappedComment .= $a1->comment;
         $wrappedComment .= "</span>";
         $a1->comment = $wrappedComment;
-//				$a1->open_review_para_id = $para_id;	
 			}
 		break;
 		
 		case 'insert':		
       $cid = $a1['cid'];
-      $p_id = $a1['open_review_para_id'];
-      $data = array('cid' => $cid, 'p_id' => $p_id ); 
-      drupal_write_record('open_review', $data );  					
+
+      if($a1['pid']) {
+        $para_id = db_result(db_query('SELECT p_id FROM {open_review} o WHERE o.cid = %d ', $a1['pid']));
+      } else {
+        $para_id = $a1['open_review_para_id'];
+      }
+      
+      $data = array('cid' => $cid, 'p_id' => $para_id ); 
+      drupal_write_record('open_review', $data );
+
 		break;
 		
 		case 'delete':
-			db_query('DELETE FROM {open_review}  WHERE cid = %d', $a1->cid);
+			db_query('DELETE FROM {open_review} WHERE cid = %d', $a1->cid);
 		break;
 		
 	}
@@ -101,7 +105,7 @@ function open_review_nodeapi(&$node, $op, $a3 = NULL, $a4  = NULL) {
 						
 			
 			$ps = $dom->getElementsByTagName('p');
-			
+           
 
 			foreach ($ps as $p) {
 				

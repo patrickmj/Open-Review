@@ -87,7 +87,16 @@ var OpenReview = {
 	        var snippet = OpenReview.getParaSnippet(paraId);		
 	        var comments = $(OpenReview.gatherCommentsForPara(paraId));
 	        comments.each(function(index, el) {
-	            d.append($(el).clone());
+				var elClone = $(el).clone();
+				
+				var indentCount = 0
+				while($(el).parent().hasClass('indented')) {
+					indentCount++;
+					el = $(el).parent();
+				}
+				var indent = 20 * indentCount + 'px';
+				$(elClone).css({marginLeft: indent}) ;				
+	            d.append(elClone);
 	        });
 	        d.dialog('option', 'title', 'Comments on ' + snippet);
 	        d.dialog('option', 'position', pos);			
