@@ -17,5 +17,25 @@ KNOWN ISSUES
 This module brings in it's own jQuery files because of UX troubles using the jQuery Upgrade and jQuery UI modules. This could cause conflicts with other modules that use jQuery.
 
 TODO
-Theme the Comment and View action links to use icons instead of text
-Improve UX signalling between the active paragraph and the active dialog showing the comments on it
+
+Work with all the various WYSIWYG editors.
+*** TinyMCE supported -- most current version
+*** FCKEditor 
+*** WYMediator
+*** openWYSIWYG
+*** markItUp
+*** yUI Editor
+*** jWYSIWYG
+*** NiceEdit
+*** Whizzywig
+
+  
+Test across browsers. (Bail on IE6?)
+*** FF
+*** IE8
+*** IE7
+*** Safari
+*** Chrome
+*** Opera
+
+Research better form for bringing in jQuery within the module itself??
