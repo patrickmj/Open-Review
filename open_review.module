@@ -136,13 +136,10 @@ function open_review_nodeapi(&$node, $op, $a3 = NULL, $a4  = NULL) {
  * Implementation of hook_footer()
  */
  
-function open_review_footer() {
-	
-	//should check to see if open_review applies to node type
+function open_review_footer() {	
 	$output = "<div id='open-review-footer'>";
 	$output .= "<div id='open-review-comments-dialog'></div>";
-	$output .= "<div id='open-review-comment-form-dialog'></div>";
-	
+	$output .= "<div id='open-review-comment-form-dialog'></div>";	
 	$output .= "</div>";
 	return $output;
 }
