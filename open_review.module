@@ -14,41 +14,39 @@
  **/
 
 function open_review_comment($a1, $op) {
-	switch ($op) {
-		case 'view':
-		
-			//check whether the comment is associated with a paragraph
-			$para_id = db_result(db_query('SELECT p_id FROM {open_review} o WHERE o.cid = %d OR o.cid =  %d', $a1->cid, $a1->pid));
-						
-			if ($para_id) {
-				$wrappedComment = "<span class='open-review-comment' id='open-review-on-para-$para_id'>";
+  switch ($op) {
+    case 'view':
+    //check whether the comment is associated with a paragraph
+    $para_id = db_result(db_query('SELECT p_id FROM {open_review} o WHERE o.cid = %d OR o.cid =  %d', $a1->cid, $a1->pid));
+
+    if ($para_id) {
+        $wrappedComment = "<span class='open-review-comment' id='open-review-on-para-$para_id'>";
         $wrappedComment .= "<span class='open-review-comment-open-on-para'>Open paragraph comments</span>";
         $wrappedComment .= $a1->comment;
         $wrappedComment .= "</span>";
         $a1->comment = $wrappedComment;
-			}
-		break;
-		
-		case 'insert':		
+    }
+    break;
+
+    case 'insert':		
       $cid = $a1['cid'];
 
-      if($a1['pid']) {
+      if ($a1['pid']) {
         $para_id = db_result(db_query('SELECT p_id FROM {open_review} o WHERE o.cid = %d ', $a1['pid']));
-      } else {
+      }
+      else {
         $para_id = $a1['open_review_para_id'];
       }
       
       $data = array('cid' => $cid, 'p_id' => $para_id ); 
       drupal_write_record('open_review', $data );
+    
+    break;
 
-		break;
-		
-		case 'delete':
-			db_query('DELETE FROM {open_review} WHERE cid = %d', $a1->cid);
-		break;
-		
-	}
-	
+    case 'delete':
+      db_query('DELETE FROM {open_review} WHERE cid = %d', $a1->cid);
+    break;    	
+    }
 }
 
 /**
@@ -56,26 +54,24 @@ function open_review_comment($a1, $op) {
  */
  
 function open_review_form_alter(&$form, $form_state, $form_id) {
-	if ($form_id == 'comment_form') {
-
-		$form['comment_filter']['open_review_para_id'] = array(
-			'#type' => 'hidden'			
-		);
-		$form['#prefix'] = "<div id='open-review-comment-form'>";
-		$form['#suffix'] = "</div>";		
-	} 
-	elseif ($form_id = 'node_type_form' && isset($form['identity']['type'])) {
-		
-		$form['comment']['open_review'] = array(
-			'#type' => 'radios',
-			'#title' => t('Open Review Comments'),
-			'#default_value' => variable_get('open_review_' . $form['#node_type']->type, 0),
-			'#options' => array(0 => t('Disabled'), 1 => t('Enabled')),
-			'#description' => t('Use Open Review for this content type?') 
-		
-		);
-		
-	}	
+  if ($form_id == 'comment_form') {
+    $form['comment_filter']['open_review_para_id'] = array(
+    	'#type' => 'hidden'			
+    );
+    $form['#prefix'] = "<div id='open-review-comment-form'>";
+    $form['#suffix'] = "</div>";		
+  } 
+  elseif ($form_id = 'node_type_form' && isset($form['identity']['type'])) {		
+    $form['comment']['open_review'] = array(
+      '#type' => 'radios',
+      '#title' => t('Open Review Comments'),
+      '#default_value' => variable_get('open_review_' . $form['#node_type']->type, 0),
+      '#options' => array(0 => t('Disabled'), 1 => t('Enabled')),
+      '#description' => t('Use Open Review for this content type?') 
+    
+    );
+    
+  }  
 }
 
 /**
@@ -83,67 +79,67 @@ function open_review_form_alter(&$form, $form_state, $form_id) {
  */
  
 function open_review_nodeapi(&$node, $op, $a3 = NULL, $a4  = NULL) {
-	
-	if ($op=='view') {
-		if (variable_get('open_review_' . $node->type, 0)) {
-			//I'm bringing in my own copy of jQuery and jQuery UI because the jQuery Upgrade and jQuery UI
-			//modules have weak documentation and are too difficult to install
-			//jquery UI also breaks when switching themes, and theme-agnosticsim is a design goal
-			//of open_review: it's something that sets it apart from CommentPress
-			drupal_add_css(drupal_get_path('module', 'open_review') . '/jquery/themes/base/ui.dialog.css');
-			drupal_add_css(drupal_get_path('module', 'open_review') . '/jquery/themes/base/ui.resizable.css');			
-			drupal_add_js(drupal_get_path('module', 'open_review') . '/jquery/jquery-1.3.2.min.js');
-			drupal_add_js(drupal_get_path('module', 'open_review') . '/jquery/jquery-ui-1.7.3.custom.min.js');
-			drupal_add_js(drupal_get_path('module', 'open_review') . '/open_review.js');
-			drupal_add_css(drupal_get_path('module', 'open_review') . '/open_review.css');
+  
+  if ($op=='view') {
+    if (variable_get('open_review_' . $node->type, 0)) {
+      //I'm bringing in my own copy of jQuery and jQuery UI because the jQuery Upgrade and jQuery UI
+      //modules have weak documentation and are too difficult to install
+      //jquery UI also breaks when switching themes, and theme-agnosticsim is a design goal
+      //of open_review: it's something that sets it apart from CommentPress
+      drupal_add_css(drupal_get_path('module', 'open_review') . '/jquery/themes/base/ui.dialog.css');
+      drupal_add_css(drupal_get_path('module', 'open_review') . '/jquery/themes/base/ui.resizable.css');      
+      drupal_add_js(drupal_get_path('module', 'open_review') . '/jquery/jquery-1.3.2.min.js');
+      drupal_add_js(drupal_get_path('module', 'open_review') . '/jquery/jquery-ui-1.7.3.custom.min.js');
+      drupal_add_js(drupal_get_path('module', 'open_review') . '/open_review.js');
+      drupal_add_css(drupal_get_path('module', 'open_review') . '/open_review.css');
 
-			$text=$node->content['body']['#value'];
-			//I need to add an id to the <p> elements, so domify it to manipulate the <p>s
-			$dom = new DOMDocument();
-			$dom->loadHTML($text);
-			$xpath = new DOMXPath($dom);
-						
-			
-			$ps = $dom->getElementsByTagName('p');
+      $text=$node->content['body']['#value'];
+      //I need to add an id to the <p> elements, so domify it to manipulate the <p>s
+      $dom = new DOMDocument();
+      $dom->loadHTML($text);
+      $xpath = new DOMXPath($dom);
+            
+      
+      $ps = $dom->getElementsByTagName('p');
            
 
-			foreach ($ps as $p) {
-				
-				$id = "p-" .  sha1($p->textContent);				
-				$p->setAttribute('id', $id);		
-				$p->setAttribute('class', 'open-review-para');				
-				$actionsEl = $dom->createElement('span');
-				$actionsEl->setAttribute('class', 'open-review-para-actions');
-								
-				$commentEl = $dom->createElement('span');				
-				$commentEl->setAttribute('class', 'open-review-para-comment');
-				$commentEl->setAttribute('title', 'Add A Comment');
+      foreach ($ps as $p) {
+        
+        $id = "p-" .  sha1($p->textContent);        
+        $p->setAttribute('id', $id);    
+        $p->setAttribute('class', 'open-review-para');        
+        $actionsEl = $dom->createElement('span');
+        $actionsEl->setAttribute('class', 'open-review-para-actions');
+                
+        $commentEl = $dom->createElement('span');        
+        $commentEl->setAttribute('class', 'open-review-para-comment');
+        $commentEl->setAttribute('title', 'Add A Comment');
                 
         $result = db_result(db_query('SELECT COUNT(*) FROM {open_review} WHERE p_id = "%s" ', $id ));        
-				$viewEl = $dom->createElement('span', $result);
-				$viewEl->setAttribute('class', 'open-review-para-view');
-				$viewEl->setAttribute('title', 'View Comments');
-				
-				$actionsEl->appendChild($commentEl);
-				$actionsEl->appendChild($viewEl);
-				$p->insertBefore($actionsEl, $p->firstChild);
-				
-								
-			}
-			
-			$node->content['body']['#value'] = $dom->saveHTML();		
-		}
-	}
+        $viewEl = $dom->createElement('span', $result);
+        $viewEl->setAttribute('class', 'open-review-para-view');
+        $viewEl->setAttribute('title', 'View Comments');
+        
+        $actionsEl->appendChild($commentEl);
+        $actionsEl->appendChild($viewEl);
+        $p->insertBefore($actionsEl, $p->firstChild);
+        
+                
+      }
+      
+      $node->content['body']['#value'] = $dom->saveHTML();    
+    }
+  }
 }
 
 /**
  * Implementation of hook_footer()
  */
  
-function open_review_footer() {	
-	$output = "<div id='open-review-footer'>";
-	$output .= "<div id='open-review-comments-dialog'></div>";
-	$output .= "<div id='open-review-comment-form-dialog'></div>";	
-	$output .= "</div>";
-	return $output;
+function open_review_footer() {  
+  $output = "<div id='open-review-footer'>";
+  $output .= "<div id='open-review-comments-dialog'></div>";
+  $output .= "<div id='open-review-comment-form-dialog'></div>";  
+  $output .= "</div>";
+  return $output;
 }
