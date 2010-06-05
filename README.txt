@@ -35,7 +35,7 @@ Testing across themes is unavoidably limited.
 TODO
 
 Work with all the various WYSIWYG editors.
-*** TinyMCE supported -- most current version
+*** TinyMCE supported -- tested on 3.3.6
 *** FCKEditor 
 *** WYMediator
 *** openWYSIWYG

@@ -38,7 +38,7 @@ p.open-review-para {
 
 span.open-review-para-actions {
 	display:block;
-    float:left;
+  float:left;
 	padding-right: 5px;;
 
 	
@@ -62,12 +62,20 @@ span.open-review-para-view {
     cursor: pointer;
     width: 20px;
     height: 20px;    
-	padding-left: 20px;
+	  padding-left: 20px;
     background-image: url('icons/comments.png');
     background-repeat: no-repeat;
     
 }
-
+span.open-review-new {
+  display: block;
+  width: 20px;
+  height: 20px;    
+  padding-left: 20px;
+	background-image: url('icons/new.png');
+	background-repeat: no-repeat; 
+	
+}
 div#open-review-comments {
 	width: 30%;
 	

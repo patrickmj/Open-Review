@@ -23,12 +23,14 @@ Install in the usual Drupal way: put the files in your sites/all/modules or appr
 
 CONFIGURATION
 
-Go to Admin->Manage Content->Content Types->(Your content type for Open Review). For the content types that should use Open Review, edit the "Comments" section to enable the module. There is little support/testing for threaded comments, and very little testing across themes.
+Go to Admin->Manage Content->Content Types->(Your content type(s) for Open Review). For the content types that should use Open Review, edit the "Comments" section to enable the module. 
 
 KNOWN ISSUES
 This module brings in it's own jQuery files because of UX troubles using the jQuery Upgrade and jQuery UI modules. This could cause conflicts with other modules that use jQuery and jQuery UI.
 I only import it's own jQuery for the content types specified to use use Open Review.
 Hopefully jQuery and jQuery UI stay backward-compatible enough to not cause conflicts.
+
+Testing across themes is unavoidably limited.
 
 TODO
 
@@ -52,4 +54,4 @@ Test across browsers. (Bail on IE6?)
 *** Chrome
 *** Opera
 
-Research better form for bringing in jQuery within the module itself??
+Research better form for bringing in jQuery within the module itself?

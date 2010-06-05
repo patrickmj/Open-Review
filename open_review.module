@@ -18,7 +18,7 @@ function open_review_comment($a1, $op) {
     case 'view':
     //check whether the comment is associated with a paragraph
     $para_id = db_result(db_query('SELECT p_id FROM {open_review} o WHERE o.cid = %d OR o.cid =  %d', $a1->cid, $a1->pid));
-
+firep($a1);
     if ($para_id) {
         $wrappedComment = "<span class='open-review-comment' id='open-review-on-para-$para_id'>";
         $wrappedComment .= "<span class='open-review-comment-open-on-para'>Open paragraph comments</span>";
@@ -98,11 +98,9 @@ function open_review_nodeapi(&$node, $op, $a3 = NULL, $a4  = NULL) {
       $dom = new DOMDocument();
       $dom->loadHTML($text);
       $xpath = new DOMXPath($dom);
-            
-      
+
       $ps = $dom->getElementsByTagName('p');
            
-
       foreach ($ps as $p) {
         
         $id = "p-" .  sha1($p->textContent);        
@@ -110,18 +108,26 @@ function open_review_nodeapi(&$node, $op, $a3 = NULL, $a4  = NULL) {
         $p->setAttribute('class', 'open-review-para');        
         $actionsEl = $dom->createElement('span');
         $actionsEl->setAttribute('class', 'open-review-para-actions');
-                
+        
         $commentEl = $dom->createElement('span');        
         $commentEl->setAttribute('class', 'open-review-para-comment');
         $commentEl->setAttribute('title', 'Add A Comment');
-                
+        $actionsEl->appendChild($commentEl);
+          
         $result = db_result(db_query('SELECT COUNT(*) FROM {open_review} WHERE p_id = "%s" ', $id ));        
         $viewEl = $dom->createElement('span', $result);
         $viewEl->setAttribute('class', 'open-review-para-view');
         $viewEl->setAttribute('title', 'View Comments');
-        
-        $actionsEl->appendChild($commentEl);
         $actionsEl->appendChild($viewEl);
+        
+        
+        $newCount = open_review_comment_num_new($node->nid, $id);        
+        if($newCount > 0) {
+          $newEl = $dom->createElement('span', $newCount);
+          $newEl->setAttribute('class', 'open-review-new');
+          $actionsEl->appendChild($newEl);        	            
+        }
+
         $p->insertBefore($actionsEl, $p->firstChild);
         
                 
@@ -137,9 +143,54 @@ function open_review_nodeapi(&$node, $op, $a3 = NULL, $a4  = NULL) {
  */
  
 function open_review_footer() {  
+  $commentsInPopup = true;
   $output = "<div id='open-review-footer'>";
   $output .= "<div id='open-review-comments-dialog'></div>";
   $output .= "<div id='open-review-comment-form-dialog'></div>";  
   $output .= "</div>";
+  $output .= "<script type='text/javascript'>";
+  if($commentsInPopup) {
+    $output .= "OpenReview.commentsInPopup = true;";	
+  } else {
+  	$output .= "OpenReview.commentsInPopup = false;";
+  }
+  
+  $output .= "</script>";
+  
   return $output;
 }
+
+/**
+ * Modified from comment_num_new. Retrieves the number of new comments on a paragraph
+ * @param int $nid
+ * @param string $paraId
+ * @param int $timestamp
+ * @return int the number of new comments
+ */
+
+
+function open_review_comment_num_new($nid, $paraId, $timestamp = 0) {
+  global $user;
+
+  if ($user->uid) {
+    // Retrieve the timestamp at which the current user last viewed the
+    // specified node.
+    if (!$timestamp) {
+      $timestamp = node_last_viewed($nid);
+    }
+    $timestamp = ($timestamp > NODE_NEW_LIMIT ? $timestamp : NODE_NEW_LIMIT);
+
+    // Use the timestamp to retrieve the number of new comments.
+    
+    $query = "SELECT COUNT(c.cid) FROM {node} n INNER JOIN {comments} c ON n.nid = c.nid INNER JOIN {open_review} o ON c.cid = o.cid WHERE n.nid = %d AND timestamp > %d AND c.status = %d AND o.p_id = '%s' " ;
+    $result = db_result(db_query('SELECT COUNT(c.cid) FROM {node} n INNER JOIN {comments} c ON n.nid = c.nid INNER JOIN {open_review} o ON c.cid = o.cid WHERE n.nid = %d AND timestamp > %d AND c.status = %d AND o.p_id = "%s" ', $nid, $timestamp, COMMENT_PUBLISHED, $paraId));
+    //$result = db_result(db_query('SELECT COUNT(c.cid) FROM {node} n INNER JOIN {comments} c ON n.nid = c.nid WHERE n.nid = %d AND timestamp > %d AND c.status = %d', $nid, $timestamp, COMMENT_PUBLISHED));
+
+    return $result;
+  }
+  else {
+    return 0;
+  }
+
+}
+

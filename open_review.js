@@ -13,96 +13,132 @@ var OpenReview = {
 	 */
 	commentViewDialogs : [],
 
-    offset: 0,
+  offset: 0,
 
+  editor: '',
+
+  wysiwygs: ['tinyMCE', 'fck'], 
 			
 	/**
 	 * Opens a dialog for commenting on a paragraph
 	 * @param {Object} event
 	 */
 	openCommentDialog: function(event) {
+		
 		$('.ui-dialog-title').removeClass('open-review-active');
 		$('.open-review-para').removeClass('open-review-active');
 		
-        if($(event.target).hasClass('open-review-view-dialog-comment')) {
+    if($(event.target).hasClass('open-review-view-dialog-comment')) {
 		  var paraId = $(event.target).data('paraId');		
 		} else if($(event.target).hasClass('open-review-para-comment')) {
 		  var paraId = event.target.parentNode.parentNode.id;		  
 		}
-		
-		
-        var d = $('#open-review-comment-form-dialog').dialog(OpenReview.commentSettings);
-		d.dialog('moveToTop');
-		$('.ui-dialog-title', d.parent()).addClass('open-review-active');
+    
+    var commentDialog = $('#open-review-comment-form-dialog').dialog(OpenReview.commentSettings);
+		commentDialog.dialog('moveToTop');
+		$('.ui-dialog-title', commentDialog.parent()).addClass('open-review-active');
 		$('#' + paraId).addClass('open-review-active');
-        var commentForm = $('#open-review-comment-form');
-        var commentFormClone = commentForm.clone();		
-		commentFormClone.append($('#edit-open-review-para-id').clone());
-		$('#edit-open-review-para-id', commentFormClone).val(paraId);		        
-        d.empty();        	
-		d.append(commentFormClone);
-		d.dialog('option', 'title', "Comment on " + OpenReview.getParaSnippet(paraId));
-		d.dialog('option', 'width', '550');
-        
-        if(typeof tinyMCE != 'undefined') {
-			//this is pretty hacky. I think what's happening is that tinyMCE remembers
-			//when execCommand etc has been called on each id, and refuses to re-call it
-			//so, add a new id for each textarea that I have to create
-			//TODO: see if I can still kill the old tas
-			var clonesLength = $('.open-review-ta-clone').length;			
-            var ta = document.createElement('textarea');
-            ta.setAttribute('id', 'edit-comment-clone-' + clonesLength);
-			ta.setAttribute('class', 'open-review-ta-clone');        
-            ta.setAttribute('name', 'comment');			
-            $('.mceEditor', commentFormClone).replaceWith(ta);
-            tinyMCE.execCommand('mceAddControl', false, 'edit-comment-clone-' + clonesLength);
-			commentForm.remove();        
-        }		
-		d.dialog('open');
-		
 
+    
+		//$('#edit-open-review-para-id', OpenReview.commentForm).val(paraId);		        
+    commentDialog.empty();        	
+    
+		commentDialog.dialog('option', 'title', "Comment on " + OpenReview.getParaSnippet(paraId));
+		commentDialog.dialog('option', 'width', '550');
+		commentDialog.dialog('open');
+		OpenReview.appendCommentFormClone(paraId, commentDialog);
 	},
+
+
+	commentFormUninit: function(mceId) {
+		
+		switch(OpenReview.editor) {
+			case 'tinyMCE':			
+		    tinyMCE.execCommand('mceRemoveControl', false, 'edit-comment');
+				tinyMCE.execCommand('mceRemoveControl', false,  mceId);
+			break;
+		}
+	},
+	
+	commentFormInit: function(mceId) {
+    switch(OpenReview.editor) {
+      case 'tinyMCE':
+        tinyMCE.execCommand('mceAddControl', false, 'edit-comment');
+				tinyMCE.execCommand('mceAddControl', false,  mceId);
+									
+      break;
+    }
+	},
+	
+	appendCommentFormClone: function(paraId, d) {		
+	  if(d.attr('id') == 'open-review-comment-form-dialog' ) {
+			var mceId = 'edit-' + paraId + '-cForm'; 
+		} else {
+			var mceId = 'edit-' + paraId;
+		}
+    OpenReview.commentFormUninit(mceId);   
+		
+		var commentFormClone = $('#open-review-comment-form').clone();		
+    commentFormClone.append($('#edit-open-review-para-id').clone());
+		$('#edit-open-review-para-id', commentFormClone).val(paraId);
+    $('textarea', commentFormClone).attr('id', mceId);
+		
+    d.append(commentFormClone);		
+		$('textarea', commentFormClone).addClass('wtf');			
+		OpenReview.commentFormInit(mceId);
+		 		
+	},
+	
 	/**
 	 * Opens a dialog for viewing all the comments on a paragraph
 	 * @param {Object} event
 	 */
 	openViewDialog: function(event) {
+		
+
 		if( $(event.target).hasClass('open-review-comment-open-on-para')) {
 		  var id = $(event.target).parent().attr('id');
 		  var paraId = id.replace('open-review-on-para-', '');
 		  var targetP = event.target;
-          var pos = [targetP.offsetLeft + targetP.clientWidth / 3 + 150 + OpenReview.commentViewDialogs.length * 30, targetP.clientTop - 30];		  
+      var pos = [targetP.offsetLeft + targetP.clientWidth / 3 + 150 + OpenReview.commentViewDialogs.length * 30, targetP.clientTop - 30];		  
 		} else if( $(event.target).hasClass('open-review-para-view')) {
 		  var targetP = event.target.parentNode.parentNode;
 		  var pos = [targetP.offsetLeft + targetP.clientWidth / 3 + 150 + OpenReview.commentViewDialogs.length * 30, targetP.offsetTop - 30];
 		  var paraId = targetP.id;	
 		}
-		
-		
+
+
 		var d = OpenReview.getCommentViewDialog(paraId);
+		d.empty();
+	     
+	  var snippet = OpenReview.getParaSnippet(paraId);		
+	  
+		var comments = $(OpenReview.gatherCommentsForPara(paraId));
+
+	  comments.each(function(index, el) {
+			var elClone = $(el).clone();
+			var indentCount = 0
+			while($(el).parent().hasClass('indented')) {
+			  indentCount++;
+			  el = $(el).parent();
+			}
+			var indent = 20 * indentCount + 'px';
+	    $(elClone).css({marginLeft: indent}) ;				
+	    d.append(elClone);
+	  });
 		
-		if (d) {
-			d.empty();
-	        //clientWidth probably fails in, guess what?, IE!	        
-	        var snippet = OpenReview.getParaSnippet(paraId);		
-	        var comments = $(OpenReview.gatherCommentsForPara(paraId));
-	        comments.each(function(index, el) {
-				var elClone = $(el).clone();
-				
-				var indentCount = 0
-				while($(el).parent().hasClass('indented')) {
-					indentCount++;
-					el = $(el).parent();
-				}
-				var indent = 20 * indentCount + 'px';
-				$(elClone).css({marginLeft: indent}) ;				
-	            d.append(elClone);
-	        });
-	        d.dialog('option', 'title', 'Comments on ' + snippet);
-	        d.dialog('option', 'position', pos);			
-	        d.dialog('open');		
-			d.append(OpenReview.getViewDialogCommentLink(paraId));
-		}
+
+		
+		
+	  d.dialog('option', 'title', 'Comments on ' + snippet);
+	  d.dialog('option', 'position', pos);			
+	  d.dialog('open');
+	  if(OpenReview.commentsInPopup) {
+      OpenReview.appendCommentFormClone(paraId, d);       
+    } else {
+      d.append(OpenReview.getViewDialogCommentLink(paraId));
+    }
+
 	},
 	
 	/**
@@ -112,6 +148,7 @@ var OpenReview = {
 	 */
 	gatherCommentsForPara: function(paraId) {
 		var returnArray = new Array();
+		
 		var comments = $('.comment').each(function(index, el) {
 			var orSpans = $('#open-review-on-para-' + paraId, el);
 			
@@ -120,19 +157,17 @@ var OpenReview = {
 			}			
 		});
 		$.unique(returnArray);
-		return returnArray;
-		
+		return returnArray;		
 	},
 	
-	getViewDialogCommentLink: function(paraId) {
-		
+	
+	getViewDialogCommentLink: function(paraId) {		
 		var link = document.createElement('p');
 		$(link).text('Add Comment');
 		$(link).data('paraId', paraId);
 		$(link).addClass('open-review-view-dialog-comment');		
 		$(link).click(OpenReview.openCommentDialog);		
-		return link;
-		
+		return link;		
 	},
 	
 	/**
@@ -141,6 +176,8 @@ var OpenReview = {
 	 * @return jQuery dialog
 	 */
 	getCommentViewDialog: function(paraId) {
+
+
 		$('.ui-dialog-title').removeClass('open-review-active');
 		for(var i = 0; i<OpenReview.commentViewDialogs.length; i++) {
 			if(OpenReview.commentViewDialogs[i].data('paraId') == paraId) {		        
@@ -148,21 +185,19 @@ var OpenReview = {
 				OpenReview.commentViewDialogs[i].dialog('moveToTop');
 				var paraPos = $('#' + paraId).offset();								
 				OpenReview.commentViewDialogs[i].dialog('option', 'position', [paraPos.left + 200 + OpenReview.getOffset(), 'top' + 2]);
-				return false;
+				return OpenReview.commentViewDialogs[i];
 			}
 		}
 
-		var d = $('#open-review-comments-dialog').dialog(OpenReview.commentViewSettings);
-		
-        if(OpenReview.commentViewDialogs.length != 0) {
-            d = d.clone();
-			
-        }
-        d.dialog(OpenReview.commentViewSettings);
+	  var d = $('#open-review-comments-dialog').dialog(OpenReview.commentViewSettings).clone();
+
+    d.dialog(OpenReview.commentViewSettings);
 		d.data('paraId', paraId);
 		OpenReview.commentViewDialogs.push(d);
+		
+	
 		return d;
-	},
+	},	
 	
 	/**
 	 * Return a snippet from the paragraph
@@ -170,10 +205,9 @@ var OpenReview = {
 	 * @return string The first few characters of the paragraph
 	 */
 	getParaSnippet: function(paraId) {	
-	    var text = $('#' + paraId).text();
+	  var text = $('#' + paraId).text();
 		var textArray = text.substr(1).split(' ');
-		textArray = textArray.slice(0, 4);
-		
+		textArray = textArray.slice(0, 4);		
 		return '"' + textArray.join(' ') + '. . ."';
 	},
 	
@@ -183,16 +217,13 @@ var OpenReview = {
 	 * @param {Object} ui
 	 */
 	commentViewDialogFocus: function(event, ui) {
-
-        
-        $('.ui-dialog-title').removeClass('open-review-active');
-        $('.ui-dialog-title', event.target.parentNode).addClass('open-review-active');
-        var paraId = $(event.target).data('paraId');
-        $('.open-review-para').removeClass('open-review-active');
-        $('#' + paraId).addClass('open-review-active');			
-			
-		
-
+		  
+		$('.ui-dialog-title').removeClass('open-review-active');
+		$('.ui-dialog-title', event.target.parentNode).addClass('open-review-active');
+		var paraId = $(event.target).data('paraId');
+		$('.open-review-para').removeClass('open-review-active');
+		$('#' + paraId).addClass('open-review-active');
+    
 	},
 	
 	/**
@@ -200,27 +231,27 @@ var OpenReview = {
 	 * @param {Object} event
 	 * @param {Object} ui
 	 */
-	commentViewDialogClose: function(event, ui) {
-		$(event.target).empty();
-		var paraId = $(event.target).data('paraId');
-        $('#' + paraId).removeClass('open-review-active');
-        for(var i = 0; i<OpenReview.commentViewDialogs.length; i++) {
-            if($(OpenReview.commentViewDialogs[i]).data('paraId') == paraId) {
-                OpenReview.commentViewDialogs.splice(i, 1);
-            }
+	commentViewDialogClose: function(event, ui) {		
+	  var paraId = $(event.target).data('paraId');
+		var mceId = 'edit-' + paraId;
+		OpenReview.commentFormUninit(mceId);
+      $('#' + paraId).removeClass('open-review-active');
+      for(var i = 0; i<OpenReview.commentViewDialogs.length; i++) {
+        if($(OpenReview.commentViewDialogs[i]).data('paraId') == paraId) {
+					 OpenReview.commentViewDialogs[i].empty();
+           OpenReview.commentViewDialogs.splice(i, 1);
         }
-
+      }
+		OpenReview.commentFormInit(mceId);
 	},
 	
 	commentDialogClose: function(event, ui) {
-		$('#marker').replaceWith(OpenReview.origForm);
-		var ta = document.createElement('textarea');
-		ta.setAttribute('id', 'edit-comment-clone-replace');
-		ta.setAttribute('class', 'open-review-ta-replace');        
-		ta.setAttribute('name', 'comment');         
-		$('.mceEditor', OpenReview.origForm).replaceWith(ta);
-		tinyMCE.execCommand('mceAddControl', false, 'edit-comment-clone-replace');		
-		
+    var paraId = $(event.target).data('paraId');
+    var mceId = 'edit-' + paraId;		
+    OpenReview.commentFormUninit(mceId);
+		$('#open-review-comment-form-dialog').empty();
+		$('.open-review-active').removeClass('open-review-active');
+		OpenReview.commentFormInit(mceId);
 	},
 	
 	getOffset: function() {
@@ -229,28 +260,25 @@ var OpenReview = {
 			OpenReview.offset = 0;
 		}
 		return OpenReview.offset;
-		
-	}
-
-    
-     
+	} 
 }
-OpenReview.commentViewSettings =    
+
+OpenReview.commentViewSettings = 
     {
-        autoOpen: false,
-        draggable: true,
-        resizable: true,
-        focus: OpenReview.commentViewDialogFocus,
-        close: OpenReview.commentViewDialogClose
+      autoOpen: false,
+      draggable: true,
+      resizable: true,
+      focus: OpenReview.commentViewDialogFocus,
+      close: OpenReview.commentViewDialogClose
     };
 
 OpenReview.commentSettings =
     {
-        autoOpen: false,
-        draggable: true,
-        resizable: true,
-		width: 550
-		//close: OpenReview.commentDialogClose 
+      autoOpen: false,
+      draggable: true,
+      resizable: true,
+		  width: '550',
+			close: OpenReview.commentDialogClose
     };
 
 
@@ -258,5 +286,14 @@ OpenReview.commentSettings =
     $('.open-review-para-comment').click(OpenReview.openCommentDialog);
     $('.open-review-para-view').click(OpenReview.openViewDialog);
     $('.open-review-comment-open-on-para').click(OpenReview.openViewDialog);
-    //OpenReview.commentFormDialog = $('#open-review-comment-form-dialog').dialog(OpenReview.commentSettings);
+		OpenReview.commentFormHTML = $('#open-review-comment-form').html();
+		OpenReview.commentDialog = $('#open-review-comment-form-dialog').dialog(OpenReview.commentSettings);
+		for each (var editor in OpenReview.wysiwygs) {
+			try {
+				eval(editor);
+				OpenReview.editor = editor;
+			} catch (e) {
+				
+			}			
+		}
  });
