@@ -3,13 +3,11 @@
 
 .indent {
 	margin-left: 20px;
-	background-color: red;
-	
+	background-color: red;	
 }
 
 .open-review-active {
-	background-color: yellow;
-	
+	background-color: yellow;	
 }
 
 .open-review-view-dialog-comment {
@@ -30,8 +28,7 @@ div.ui-dialog .open-review-comment-open-on-para {
 	display: none;
 }
 
-p.open-review-para {
-	
+p.open-review-para {	
 	min-height: 50px;
 }
 
@@ -39,25 +36,20 @@ p.open-review-para {
 span.open-review-para-actions {
 	display:block;
   float:left;
-	padding-right: 5px;;
-
-	
+	padding-right: 5px;	
 }
 
 
 span.open-review-para-comment {
-	
 	display: block;
 	cursor: pointer;
 	width: 20px;
 	height: 20px;
-    background-image: url('icons/comment_add.png');
+  background-image: url('icons/comment_add.png');
 	background-repeat: no-repeat;
-	
 }
 
 span.open-review-para-view {
-    
     display: block;
     cursor: pointer;
     width: 20px;
@@ -65,7 +57,6 @@ span.open-review-para-view {
 	  padding-left: 20px;
     background-image: url('icons/comments.png');
     background-repeat: no-repeat;
-    
 }
 span.open-review-new {
   display: block;
@@ -74,12 +65,9 @@ span.open-review-new {
   padding-left: 20px;
 	background-image: url('icons/new.png');
 	background-repeat: no-repeat; 
-	
 }
 div#open-review-comments {
 	width: 30%;
-	
-	
 }
 
 /* jQuery styling */

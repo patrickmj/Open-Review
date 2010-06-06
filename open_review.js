@@ -13,11 +13,22 @@ var OpenReview = {
 	 */
 	commentViewDialogs : [],
 
+  /**
+   * An offset used to keep new dialogs distinguishable when opened
+   */
   offset: 0,
+	
+  /**
+   * The editor that OpenReview detects
+   */
 
   editor: '',
 
-  wysiwygs: ['tinyMCE', 'fck'], 
+  /**
+   * Array of the editors javascript objects to check for
+   */
+
+  wysiwygs: ['tinyMCE'], 
 			
 	/**
 	 * Opens a dialog for commenting on a paragraph
@@ -27,7 +38,7 @@ var OpenReview = {
 		
 		$('.ui-dialog-title').removeClass('open-review-active');
 		$('.open-review-para').removeClass('open-review-active');
-		
+
     if($(event.target).hasClass('open-review-view-dialog-comment')) {
 		  var paraId = $(event.target).data('paraId');		
 		} else if($(event.target).hasClass('open-review-para-comment')) {
@@ -38,38 +49,53 @@ var OpenReview = {
 		commentDialog.dialog('moveToTop');
 		$('.ui-dialog-title', commentDialog.parent()).addClass('open-review-active');
 		$('#' + paraId).addClass('open-review-active');
-
-    
-		//$('#edit-open-review-para-id', OpenReview.commentForm).val(paraId);		        
+    		        
     commentDialog.empty();        	
-    
+    commentDialog.data('paraId', paraId);
 		commentDialog.dialog('option', 'title', "Comment on " + OpenReview.getParaSnippet(paraId));
 		commentDialog.dialog('option', 'width', '550');
 		commentDialog.dialog('open');
+
 		OpenReview.appendCommentFormClone(paraId, commentDialog);
 	},
 
+  // Making the wysiwyg editors work properly with jQuery requires some shenanigans.
+	// appendCommentFormClone, commentFormUninit, and commmentFormInit aim to 
+	// handle that on an editor-by-editor basis.
 
-	commentFormUninit: function(mceId) {
-		
+	/**
+	 * Uninitialize the editors if needed before the jQuery starts working
+	 * @param string editorElId the id of the editor element to uninitialize 
+	 */
+
+	commentFormUninit: function(editorElId) {		
 		switch(OpenReview.editor) {
 			case 'tinyMCE':			
 		    tinyMCE.execCommand('mceRemoveControl', false, 'edit-comment');
-				tinyMCE.execCommand('mceRemoveControl', false,  mceId);
-			break;
+				tinyMCE.execCommand('mceRemoveControl', false,  editorElId);
+      break;
 		}
 	},
 	
-	commentFormInit: function(mceId) {
+	/**
+	 * Reinitialize the editors after the jQuery has placed the elements in dialogs
+	 * @param string editorElId
+	 */
+	
+	commentFormInit: function(editorElId) {
     switch(OpenReview.editor) {
       case 'tinyMCE':
         tinyMCE.execCommand('mceAddControl', false, 'edit-comment');
-				tinyMCE.execCommand('mceAddControl', false,  mceId);
+				tinyMCE.execCommand('mceAddControl', false,  editorElId);
 									
       break;
     }
 	},
-	
+	/**
+	 * Append a comment for to a dialoge, after doing work to make the process safe with editors
+	 * @param string paraId id of the para being commented on
+	 * @param {Object} d the jQuery dialog to append the comment form to
+	 */
 	appendCommentFormClone: function(paraId, d) {		
 	  if(d.attr('id') == 'open-review-comment-form-dialog' ) {
 			var mceId = 'edit-' + paraId + '-cForm'; 
@@ -126,10 +152,7 @@ var OpenReview = {
 	    $(elClone).css({marginLeft: indent}) ;				
 	    d.append(elClone);
 	  });
-		
 
-		
-		
 	  d.dialog('option', 'title', 'Comments on ' + snippet);
 	  d.dialog('option', 'position', pos);			
 	  d.dialog('open');
@@ -268,6 +291,7 @@ OpenReview.commentViewSettings =
       autoOpen: false,
       draggable: true,
       resizable: true,
+			width: '550',
       focus: OpenReview.commentViewDialogFocus,
       close: OpenReview.commentViewDialogClose
     };
@@ -278,6 +302,7 @@ OpenReview.commentSettings =
       draggable: true,
       resizable: true,
 		  width: '550',
+			focus: OpenReview.commentViewDialogFocus,
 			close: OpenReview.commentDialogClose
     };
 

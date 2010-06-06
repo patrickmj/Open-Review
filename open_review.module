@@ -18,7 +18,6 @@ function open_review_comment($a1, $op) {
     case 'view':
     //check whether the comment is associated with a paragraph
     $para_id = db_result(db_query('SELECT p_id FROM {open_review} o WHERE o.cid = %d OR o.cid =  %d', $a1->cid, $a1->pid));
-firep($a1);
     if ($para_id) {
         $wrappedComment = "<span class='open-review-comment' id='open-review-on-para-$para_id'>";
         $wrappedComment .= "<span class='open-review-comment-open-on-para'>Open paragraph comments</span>";
@@ -56,21 +55,28 @@ firep($a1);
 function open_review_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'comment_form') {
     $form['comment_filter']['open_review_para_id'] = array(
-    	'#type' => 'hidden'			
+      '#type' => 'hidden'			
     );
     $form['#prefix'] = "<div id='open-review-comment-form'>";
     $form['#suffix'] = "</div>";		
   } 
   elseif ($form_id = 'node_type_form' && isset($form['identity']['type'])) {		
+
     $form['comment']['open_review'] = array(
       '#type' => 'radios',
       '#title' => t('Open Review Comments'),
       '#default_value' => variable_get('open_review_' . $form['#node_type']->type, 0),
       '#options' => array(0 => t('Disabled'), 1 => t('Enabled')),
-      '#description' => t('Use Open Review for this content type?') 
-    
+      '#description' => t('Use Open Review for this content type?')     
     );
     
+    $form['comment']['open_review_form_in_popup'] = array(
+      '#type' => 'radios',
+      '#title' => t('Open Review Comment Form in Popups?'),
+      '#default_value' => variable_get('open_review_form_in_popup_'. $form['#node_type']->type, 0),
+      '#options' => array(0 => t('No comment form'), 1 => t('Comment form under paragraph comments')),
+      '#description' => t('Show the comment form under paragraph comments?')     
+    );    
   }  
 }
 
@@ -122,17 +128,14 @@ function open_review_nodeapi(&$node, $op, $a3 = NULL, $a4  = NULL) {
         
         
         $newCount = open_review_comment_num_new($node->nid, $id);        
-        if($newCount > 0) {
+        if ($newCount > 0) {
           $newEl = $dom->createElement('span', $newCount);
           $newEl->setAttribute('class', 'open-review-new');
           $actionsEl->appendChild($newEl);        	            
         }
 
-        $p->insertBefore($actionsEl, $p->firstChild);
-        
-                
-      }
-      
+        $p->insertBefore($actionsEl, $p->firstChild);         
+      }      
       $node->content['body']['#value'] = $dom->saveHTML();    
     }
   }
@@ -143,21 +146,22 @@ function open_review_nodeapi(&$node, $op, $a3 = NULL, $a4  = NULL) {
  */
  
 function open_review_footer() {  
-  $commentsInPopup = true;
-  $output = "<div id='open-review-footer'>";
-  $output .= "<div id='open-review-comments-dialog'></div>";
-  $output .= "<div id='open-review-comment-form-dialog'></div>";  
-  $output .= "</div>";
-  $output .= "<script type='text/javascript'>";
-  if($commentsInPopup) {
-    $output .= "OpenReview.commentsInPopup = true;";	
-  } else {
-  	$output .= "OpenReview.commentsInPopup = false;";
+  $node = node_load(arg(1));
+  if (variable_get('open_review_' . $node->type, 0)) {    
+    $output = "<div id='open-review-footer'>";
+    $output .= "<div id='open-review-comments-dialog'></div>";
+    $output .= "<div id='open-review-comment-form-dialog'></div>";  
+    $output .= "</div>";
+    $output .= "<script type='text/javascript'>";
+    if (variable_get('open_review_form_in_popup_'. $node->type, 0)) {
+      $output .= "OpenReview.commentsInPopup = true;";	
+    } 
+    else {
+  	  $output .= "if (OpenReview) { OpenReview.commentsInPopup = false; }";
+    }
+    $output .= "</script>";  
+    return $output;
   }
-  
-  $output .= "</script>";
-  
-  return $output;
 }
 
 /**
@@ -183,8 +187,7 @@ function open_review_comment_num_new($nid, $paraId, $timestamp = 0) {
     // Use the timestamp to retrieve the number of new comments.
     
     $query = "SELECT COUNT(c.cid) FROM {node} n INNER JOIN {comments} c ON n.nid = c.nid INNER JOIN {open_review} o ON c.cid = o.cid WHERE n.nid = %d AND timestamp > %d AND c.status = %d AND o.p_id = '%s' " ;
-    $result = db_result(db_query('SELECT COUNT(c.cid) FROM {node} n INNER JOIN {comments} c ON n.nid = c.nid INNER JOIN {open_review} o ON c.cid = o.cid WHERE n.nid = %d AND timestamp > %d AND c.status = %d AND o.p_id = "%s" ', $nid, $timestamp, COMMENT_PUBLISHED, $paraId));
-    //$result = db_result(db_query('SELECT COUNT(c.cid) FROM {node} n INNER JOIN {comments} c ON n.nid = c.nid WHERE n.nid = %d AND timestamp > %d AND c.status = %d', $nid, $timestamp, COMMENT_PUBLISHED));
+    $result = db_result(db_query('SELECT COUNT(c.cid) FROM {node} n INNER JOIN {comments} c ON n.nid = c.nid INNER JOIN {open_review} o ON c.cid = o.cid WHERE n.nid = %d AND timestamp > %d AND c.status = %d AND o.p_id = "%s" ', $nid, $timestamp, COMMENT_PUBLISHED, $paraId));    
 
     return $result;
   }
