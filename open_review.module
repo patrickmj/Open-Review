@@ -102,7 +102,7 @@ function open_review_nodeapi(&$node, $op, $a3 = NULL, $a4  = NULL) {
       $text=$node->content['body']['#value'];
       //I need to add an id to the <p> elements, so domify it to manipulate the <p>s
       $dom = new DOMDocument();
-      $dom->loadHTML($text);
+      $dom->loadHTML('<?xml encoding="UTF-8">' . $text);
       $xpath = new DOMXPath($dom);
 
       $ps = $dom->getElementsByTagName('p');
