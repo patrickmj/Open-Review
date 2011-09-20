@@ -52,7 +52,7 @@ var OpenReview = {
     		        
     commentDialog.empty();        	
     commentDialog.data('paraId', paraId);
-		commentDialog.dialog('option', 'title', Drupal.t("Comment on ") + OpenReview.getParaSnippet(paraId));
+		commentDialog.dialog('option', 'title', Drupal.t("Comments on ") + OpenReview.getParaSnippet(paraId));
 		commentDialog.dialog('option', 'width', '550');
 		commentDialog.dialog('open');
 
@@ -153,7 +153,7 @@ var OpenReview = {
 	    d.append(elClone);
 	  });
 
-	  d.dialog('option', 'title', Drupal.t('Comments on ') + snippet);
+	  d.dialog('option', 'title', Drupal.t("Comments on ") + snippet);
 	  d.dialog('option', 'position', pos);			
 	  d.dialog('open');
 	  if(OpenReview.commentsInPopup) {
