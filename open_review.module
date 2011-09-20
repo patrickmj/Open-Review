@@ -120,12 +120,13 @@ function open_review_nodeapi(&$node, $op, $a3 = NULL, $a4  = NULL) {
         $commentEl->setAttribute('title', 'Add A Comment');
         $actionsEl->appendChild($commentEl);
           
-        $result = db_result(db_query('SELECT COUNT(*) FROM {open_review} WHERE p_id = "%s" ', $id ));        
-        $viewEl = $dom->createElement('span', $result);
-        $viewEl->setAttribute('class', 'open-review-para-view');
-        $viewEl->setAttribute('title', 'View Comments');
-        $actionsEl->appendChild($viewEl);
-        
+        $result = db_result(db_query('SELECT COUNT(*) FROM {open_review} WHERE p_id = "%s" ', $id ));  
+        if ($result > 0 ) {      
+          $viewEl = $dom->createElement('span', $result);
+          $viewEl->setAttribute('class', 'open-review-para-view');
+          $viewEl->setAttribute('title', 'View Comments');
+          $actionsEl->appendChild($viewEl);
+        }
         
         $newCount = open_review_comment_num_new($node->nid, $id);        
         if ($newCount > 0) {
