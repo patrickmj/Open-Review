@@ -52,7 +52,7 @@ var OpenReview = {
     		        
     commentDialog.empty();        	
     commentDialog.data('paraId', paraId);
-		commentDialog.dialog('option', 'title', "Comment on " + OpenReview.getParaSnippet(paraId));
+		commentDialog.dialog('option', 'title', Drupal.t("Comments on ") + OpenReview.getParaSnippet(paraId));
 		commentDialog.dialog('option', 'width', '550');
 		commentDialog.dialog('open');
 
@@ -153,7 +153,7 @@ var OpenReview = {
 	    d.append(elClone);
 	  });
 
-	  d.dialog('option', 'title', 'Comments on ' + snippet);
+	  d.dialog('option', 'title', Drupal.t("Comments on ") + snippet);
 	  d.dialog('option', 'position', pos);			
 	  d.dialog('open');
 	  if(OpenReview.commentsInPopup) {
@@ -313,7 +313,7 @@ OpenReview.commentSettings =
     $('.open-review-comment-open-on-para').click(OpenReview.openViewDialog);
 		OpenReview.commentFormHTML = $('#open-review-comment-form').html();
 		OpenReview.commentDialog = $('#open-review-comment-form-dialog').dialog(OpenReview.commentSettings);
-		for each (var editor in OpenReview.wysiwygs) {
+		for (var editor in OpenReview.wysiwygs) {
 			try {
 				eval(editor);
 				OpenReview.editor = editor;
