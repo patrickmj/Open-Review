@@ -468,7 +468,7 @@ $.widget("ui.sortable", $.extend({}, $.ui.mouse, {
 			? [options.connectWith]
 			: options.connectWith;
 	},
-	
+
 	_getItemsAsjQuery: function(connected) {
 
 		var self = this;

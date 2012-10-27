@@ -26,7 +26,7 @@ var setDataSwitch = {
 		resize: "drag.resizable",
 		resizeStop: "stop.resizable"
 	},
-	
+
 	uiDialogClasses =
 		'ui-dialog ' +
 		'ui-widget ' +
@@ -137,7 +137,7 @@ $.widget("ui.dialog", {
 
 		(options.bgiframe && $.fn.bgiframe && uiDialog.bgiframe());
 		(options.autoOpen && this.open());
-		
+
 	},
 
 	destroy: function() {
@@ -155,7 +155,7 @@ $.widget("ui.dialog", {
 
 	close: function(event) {
 		var self = this;
-		
+
 		if (false === self._trigger('beforeclose', event)) {
 			return;
 		}
@@ -172,7 +172,7 @@ $.widget("ui.dialog", {
 		$.ui.dialog.overlay.resize();
 
 		self._isOpen = false;
-		
+
 		// adjust the maxZ to allow other modal dialogs to continue to work (see #4309)
 		if (self.options.modal) {
 			var maxZ = 0;
@@ -197,7 +197,7 @@ $.widget("ui.dialog", {
 			|| (!this.options.stack && !this.options.modal)) {
 			return this._trigger('focus', event);
 		}
-		
+
 		if (this.options.zIndex > $.ui.dialog.maxZ) {
 			$.ui.dialog.maxZ = this.options.zIndex;
 		}
@@ -583,7 +583,7 @@ $.extend($.ui.dialog.overlay, {
 		}
 
 		$el.remove();
-		
+
 		// adjust the maxZ to allow other modal dialogs to continue to work (see #4309)
 		var maxZ = 0;
 		$.each(this.instances, function() {

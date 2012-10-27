@@ -3,11 +3,11 @@
 
 .indent {
 	margin-left: 20px;
-	background-color: red;	
+	background-color: red;
 }
 
 .open-review-active {
-	background-color: yellow;	
+	background-color: yellow;
 }
 
 .open-review-view-dialog-comment {
@@ -21,14 +21,14 @@
 	cursor: pointer;
 	padding-left: 20px;
     background-image: url('icons/comments.png');
-    background-repeat: no-repeat;	
+    background-repeat: no-repeat;
 }
 
 div.ui-dialog .open-review-comment-open-on-para {
 	display: none;
 }
 
-p.open-review-para {	
+p.open-review-para {
 	min-height: 50px;
 }
 
@@ -36,7 +36,7 @@ p.open-review-para {
 span.open-review-para-actions {
 	display:block;
   float:left;
-	padding-right: 5px;	
+	padding-right: 5px;
 }
 
 
@@ -53,7 +53,7 @@ span.open-review-para-view {
     display: block;
     cursor: pointer;
     width: 20px;
-    height: 20px;    
+    height: 20px;
 	  padding-left: 20px;
     background-image: url('icons/comments.png');
     background-repeat: no-repeat;
@@ -61,10 +61,10 @@ span.open-review-para-view {
 span.open-review-new {
   display: block;
   width: 20px;
-  height: 20px;    
+  height: 20px;
   padding-left: 20px;
 	background-image: url('icons/new.png');
-	background-repeat: no-repeat; 
+	background-repeat: no-repeat;
 }
 div#open-review-comments {
 	width: 30%;
@@ -76,7 +76,7 @@ div#open-review-comments {
 	height: auto;
 	margin: 0;
 	width: auto;
-	
+
 }
 
 div.ui-dialog {
@@ -95,16 +95,16 @@ div.ui-dialog-titlebar {
 }
 
 span#ui-dialog-title-dialog {
-	
+
 }
 
 
 
 di#dialog {
-	
+
 }
 div.ui-dialog-content {
-	
+
 }
 
 

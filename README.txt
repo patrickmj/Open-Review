@@ -34,7 +34,7 @@ TODO
 
 Work with all the various WYSIWYG editors.
 * TinyMCE supported -- tested on 3.3.6
-* FCKEditor 
+* FCKEditor
 * WYMediator
 * openWYSIWYG
 * markItUp
@@ -43,7 +43,7 @@ Work with all the various WYSIWYG editors.
 * NiceEdit
 * Whizzywig
 
-  
-Test across browsers. 
+
+Test across browsers.
 
 Research better form for bringing in jQuery within the module itself?

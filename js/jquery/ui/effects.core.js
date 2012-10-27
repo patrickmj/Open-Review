@@ -139,7 +139,7 @@ function _normalizeArguments(a, m) {
 	var callback = o.callback || ( $.isFunction(a[1]) && a[1] ) || ( $.isFunction(a[2]) && a[2] ) || ( $.isFunction(a[3]) && a[3] );
 
 	return [a[0], o, speed, callback];
-	
+
 }
 
 //Extend the methods of jQuery

@@ -40,7 +40,7 @@ $.widget("ui.accordion", {
 		}
 
 		this.element.addClass("ui-accordion ui-widget ui-helper-reset");
-		
+
 		// in lack of child-selectors in CSS we need to mark top-LIs in a UL-accordion for some IE-fix
 		if (this.element[0].nodeName == "UL") {
 			this.element.children("li").addClass("ui-accordion-li-fix");
@@ -126,10 +126,10 @@ $.widget("ui.accordion", {
 			contents.css("height", "");
 		}
 	},
-	
+
 	_setData: function(key, value) {
 		if(key == 'alwaysOpen') { key = 'collapsible'; value = !value; }
-		$.widget.prototype._setData.apply(this, arguments);	
+		$.widget.prototype._setData.apply(this, arguments);
 	},
 
 	_keydown: function(event) {
@@ -173,11 +173,11 @@ $.widget("ui.accordion", {
 		var o = this.options, maxHeight;
 
 		if (o.fillSpace) {
-			
+
 			if($.browser.msie) { var defOverflow = this.element.parent().css('overflow'); this.element.parent().css('overflow', 'hidden'); }
 			maxHeight = this.element.parent().height();
 			if($.browser.msie) { this.element.parent().css('overflow', defOverflow); }
-	
+
 			this.headers.each(function() {
 				maxHeight -= $(this).outerHeight();
 			});
@@ -424,10 +424,10 @@ $.extend($.ui.accordion, {
 			var s = options.toShow;
 			originalWidth = s[0].style.width;
 			s.width( parseInt(s.parent().width(),10) - parseInt(s.css("paddingLeft"),10) - parseInt(s.css("paddingRight"),10) - (parseInt(s.css("borderLeftWidth"),10) || 0) - (parseInt(s.css("borderRightWidth"),10) || 0) );
-			
+
 			$.each(fxAttrs, function(i, prop) {
 				hideProps[prop] = 'hide';
-				
+
 				var parts = ('' + $.css(options.toShow[0], prop)).match(/^([\d+-.]+)(.*)$/);
 				showProps[prop] = {
 					value: parts[1],
@@ -443,7 +443,7 @@ $.extend($.ui.accordion, {
 					if (settings.prop == 'height') {
 						percentDone = (settings.now - settings.start) / (settings.end - settings.start);
 					}
-					
+
 					options.toShow[0].style[settings.prop] =
 						(percentDone * showProps[settings.prop].value) + showProps[settings.prop].unit;
 				},
